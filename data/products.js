@@ -24,11 +24,11 @@ const TT_PRODUCTS = [
     category: "drones",
     price: 8490,
     salePrice: 7290,
-    img:     ttImg("drone,quadcopter", 1011),
+    img:     "https://image.qwenlm.ai/public_source/32d72af3-5c7b-437a-8259-f23a4302fd44/1db99e685-cbac-42b2-9c28-cd82aac62b24.png",
     gallery: [
-      ttImg("drone,quadcopter", 1011, 1200, 900),
-      ttImg("drone,aerial",     1012, 1200, 900),
-      ttImg("drone,sky",        1013, 1200, 900)
+      "https://image.qwenlm.ai/public_source/32d72af3-5c7b-437a-8259-f23a4302fd44/1db99e685-cbac-42b2-9c28-cd82aac62b24.png",
+      ttImg("drone,aerial", 1012, 1200, 900),
+      ttImg("drone,sky",    1013, 1200, 900)
     ],
     icon: "flight",
     badge: "Sale",
@@ -56,11 +56,11 @@ const TT_PRODUCTS = [
     brand: "VoltRider",
     category: "vehicles",
     price: 12900,
-    img:     ttImg("electric,scooter", 1021),
+    img:     "https://image.qwenlm.ai/public_source/32d72af3-5c7b-437a-8259-f23a4302fd44/1c7b2f449-df6f-42a9-a47f-b5d7b849cbcd.png",
     gallery: [
-      ttImg("electric,scooter",   1021, 1200, 900),
-      ttImg("scooter,city",       1022, 1200, 900),
-      ttImg("kick,scooter",       1023, 1200, 900)
+      "https://image.qwenlm.ai/public_source/32d72af3-5c7b-437a-8259-f23a4302fd44/1c7b2f449-df6f-42a9-a47f-b5d7b849cbcd.png",
+      ttImg("scooter,city", 1022, 1200, 900),
+      ttImg("kick,scooter", 1023, 1200, 900)
     ],
     icon: "electric_scooter",
     badge: "New",
