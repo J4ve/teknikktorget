@@ -3,11 +3,18 @@
    Blueprint §5.3: Filterable specs (motorPower, batteryType, brand, scale).
 
    Image sourcing strategy:
-   - Each product has a primary `img` and a 2-3 image `gallery` (Unsplash + qwenlm AI assets)
-   - All URLs are direct CDN links (no placeholders) with onerror fallback to Material Symbol icon
+   - Each product has a primary `img` and a 2-3 image `gallery`.
+   - URLs are loremflickr.com tag-searches with a deterministic `lock` seed → real Flickr photo
+     matching the keywords. Reliable, topical, no API key needed.
+   - `onerror` in the renderer falls back to a Material Symbol icon if the network fails.
 
    Norwegian (Bokmål) translations inline per product so the language toggle can swap on the fly.
 */
+
+// Helper: compose a loremflickr URL for tag-based topical photos.
+function ttImg(tags, seed, w = 640, h = 640) {
+  return `https://loremflickr.com/${w}/${h}/${encodeURIComponent(tags)}?lock=${seed}`;
+}
 
 const TT_PRODUCTS = [
   {
@@ -17,11 +24,11 @@ const TT_PRODUCTS = [
     category: "drones",
     price: 8490,
     salePrice: 7290,
-    img: "https://images.unsplash.com/photo-1508614999368-9260051292e5?w=640&h=640&fit=crop",
+    img:     ttImg("drone,quadcopter", 1011),
     gallery: [
-      "https://images.unsplash.com/photo-1508614999368-9260051292e5?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1521405924368-64c5b84bec60?w=1200&h=900&fit=crop"
+      ttImg("drone,quadcopter", 1011, 1200, 900),
+      ttImg("drone,aerial",     1012, 1200, 900),
+      ttImg("drone,sky",        1013, 1200, 900)
     ],
     icon: "flight",
     badge: "Sale",
@@ -49,11 +56,11 @@ const TT_PRODUCTS = [
     brand: "VoltRider",
     category: "vehicles",
     price: 12900,
-    img: "https://images.unsplash.com/photo-1604147495798-57beb5d6af73?w=640&h=640&fit=crop",
+    img:     ttImg("electric,scooter", 1021),
     gallery: [
-      "https://images.unsplash.com/photo-1604147495798-57beb5d6af73?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1572613230600-c4dd8d3ac63a?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1591025207163-942350e47db2?w=1200&h=900&fit=crop"
+      ttImg("electric,scooter",   1021, 1200, 900),
+      ttImg("scooter,city",       1022, 1200, 900),
+      ttImg("kick,scooter",       1023, 1200, 900)
     ],
     icon: "electric_scooter",
     badge: "New",
@@ -81,11 +88,11 @@ const TT_PRODUCTS = [
     brand: "CoreDev",
     category: "electronics",
     price: 450,
-    img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=640&h=640&fit=crop",
+    img:     ttImg("circuit,board", 1031),
     gallery: [
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1581092446327-9b52bd1570c2?w=1200&h=900&fit=crop"
+      ttImg("circuit,board",        1031, 1200, 900),
+      ttImg("microcontroller,chip", 1032, 1200, 900),
+      ttImg("electronics,pcb",      1033, 1200, 900)
     ],
     icon: "memory",
     badge: "",
@@ -113,11 +120,11 @@ const TT_PRODUCTS = [
     brand: "PrintMaster",
     category: "tools",
     price: 6200,
-    img: "https://images.unsplash.com/photo-1631710565131-fbcebbe27c44?w=640&h=640&fit=crop",
+    img:     ttImg("3d,printer", 1041),
     gallery: [
-      "https://images.unsplash.com/photo-1631710565131-fbcebbe27c44?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1612886623474-26c4cf64a93e?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1635355956305-cccfae67e0d9?w=1200&h=900&fit=crop"
+      ttImg("3d,printer",       1041, 1200, 900),
+      ttImg("3dprinting,maker", 1042, 1200, 900),
+      ttImg("printer,workshop", 1043, 1200, 900)
     ],
     icon: "deployed_code",
     badge: "",
@@ -145,11 +152,11 @@ const TT_PRODUCTS = [
     brand: "Sony",
     category: "electronics",
     price: 3490,
-    img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=640&h=640&fit=crop",
+    img:     ttImg("headphones", 1051),
     gallery: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1545127398-14699f92334b?w=1200&h=900&fit=crop"
+      ttImg("headphones",        1051, 1200, 900),
+      ttImg("headphones,studio", 1052, 1200, 900),
+      ttImg("headphones,music",  1053, 1200, 900)
     ],
     icon: "headphones",
     badge: "",
@@ -177,11 +184,11 @@ const TT_PRODUCTS = [
     brand: "TrailWatt",
     category: "vehicles",
     price: 18990,
-    img: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=640&h=640&fit=crop",
+    img:     ttImg("mountain,bike", 1061),
     gallery: [
-      "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=1200&h=900&fit=crop"
+      ttImg("mountain,bike",  1061, 1200, 900),
+      ttImg("ebike,electric", 1062, 1200, 900),
+      ttImg("bicycle,trail",  1063, 1200, 900)
     ],
     icon: "directions_bike",
     badge: "New",
@@ -209,11 +216,11 @@ const TT_PRODUCTS = [
     brand: "AeroPro",
     category: "drones",
     price: 6990,
-    img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=640&h=640&fit=crop",
+    img:     ttImg("drone,racing", 1071),
     gallery: [
-      "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1521405924368-64c5b84bec60?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=1200&h=900&fit=crop"
+      ttImg("drone,racing",  1071, 1200, 900),
+      ttImg("drone,fpv",     1072, 1200, 900),
+      ttImg("quadcopter,kit",1073, 1200, 900)
     ],
     icon: "rocket_launch",
     badge: "",
@@ -241,11 +248,11 @@ const TT_PRODUCTS = [
     brand: "NodeNest",
     category: "electronics",
     price: 1290,
-    img: "https://images.unsplash.com/photo-1558002038-1055907df827?w=640&h=640&fit=crop",
+    img:     ttImg("smarthome,hub", 1081),
     gallery: [
-      "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=1200&h=900&fit=crop"
+      ttImg("smarthome,hub",     1081, 1200, 900),
+      ttImg("smarthome,device",  1082, 1200, 900),
+      ttImg("smartspeaker,iot",  1083, 1200, 900)
     ],
     icon: "home_iot_device",
     badge: "New",
@@ -273,11 +280,11 @@ const TT_PRODUCTS = [
     brand: "MicroEdge",
     category: "tools",
     price: 690,
-    img: "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=640&h=640&fit=crop",
+    img:     ttImg("caliper,measure", 1091),
     gallery: [
-      "https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=1200&h=900&fit=crop"
+      ttImg("caliper,measure",  1091, 1200, 900),
+      ttImg("workshop,tools",   1092, 1200, 900),
+      ttImg("precision,tool",   1093, 1200, 900)
     ],
     icon: "straighten",
     badge: "",
@@ -305,11 +312,11 @@ const TT_PRODUCTS = [
     brand: "TerraClimb",
     category: "vehicles",
     price: 4290,
-    img: "https://images.unsplash.com/photo-1623019033012-c1ed1de2eb8c?w=640&h=640&fit=crop",
+    img:     ttImg("rc,car", 1101),
     gallery: [
-      "https://images.unsplash.com/photo-1623019033012-c1ed1de2eb8c?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1581235720708-b8c52f6b3c3e?w=1200&h=900&fit=crop"
+      ttImg("rc,car",        1101, 1200, 900),
+      ttImg("rc,crawler",    1102, 1200, 900),
+      ttImg("offroad,toy",   1103, 1200, 900)
     ],
     icon: "directions_car",
     badge: "",
@@ -337,11 +344,11 @@ const TT_PRODUCTS = [
     brand: "RoboKit",
     category: "robotics",
     price: 5490,
-    img: "https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=640&h=640&fit=crop",
+    img:     ttImg("robot,arm", 1111),
     gallery: [
-      "https://images.unsplash.com/photo-1535378620166-273708d44e4c?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=900&fit=crop"
+      ttImg("robot,arm",        1111, 1200, 900),
+      ttImg("robotics,industry",1112, 1200, 900),
+      ttImg("robot,automation", 1113, 1200, 900)
     ],
     icon: "precision_manufacturing",
     badge: "",
@@ -369,11 +376,11 @@ const TT_PRODUCTS = [
     brand: "SunForge",
     category: "components",
     price: 5990,
-    img: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=640&h=640&fit=crop",
+    img:     ttImg("solar,panel", 1121),
     gallery: [
-      "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1559302504-64aae6ca6b6d?w=1200&h=900&fit=crop"
+      ttImg("solar,panel",   1121, 1200, 900),
+      ttImg("solar,energy",  1122, 1200, 900),
+      ttImg("photovoltaic",  1123, 1200, 900)
     ],
     icon: "solar_power",
     badge: "",
@@ -401,11 +408,11 @@ const TT_PRODUCTS = [
     brand: "TrackLite",
     category: "electronics",
     price: 790,
-    img: "https://images.unsplash.com/photo-1577538928305-3807c3993047?w=640&h=640&fit=crop",
+    img:     ttImg("gps,tracker", 1131),
     gallery: [
-      "https://images.unsplash.com/photo-1577538928305-3807c3993047?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1560732488-7b5e485f6504?w=1200&h=900&fit=crop"
+      ttImg("gps,tracker",     1131, 1200, 900),
+      ttImg("gps,navigation",  1132, 1200, 900),
+      ttImg("location,device", 1133, 1200, 900)
     ],
     icon: "location_on",
     badge: "",
@@ -433,10 +440,10 @@ const TT_PRODUCTS = [
     brand: "Energizer",
     category: "components",
     price: 129,
-    img: "https://images.unsplash.com/photo-1620678398812-a9bea5d44c70?w=640&h=640&fit=crop",
+    img:     ttImg("battery,batteries", 1141),
     gallery: [
-      "https://images.unsplash.com/photo-1620678398812-a9bea5d44c70?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1620478184729-15ade7434c0a?w=1200&h=900&fit=crop"
+      ttImg("battery,batteries", 1141, 1200, 900),
+      ttImg("battery,aa",        1142, 1200, 900)
     ],
     icon: "battery_full",
     badge: "",
@@ -463,11 +470,11 @@ const TT_PRODUCTS = [
     brand: "ChargeForge",
     category: "components",
     price: 1990,
-    img: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=640&h=640&fit=crop",
+    img:     ttImg("ev,charger", 1151),
     gallery: [
-      "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1611174743420-3d7df880ce32?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1633707578596-7c79d2f53f95?w=1200&h=900&fit=crop"
+      ttImg("ev,charger",   1151, 1200, 900),
+      ttImg("electric,car", 1152, 1200, 900),
+      ttImg("charging,plug",1153, 1200, 900)
     ],
     icon: "ev_station",
     badge: "",
@@ -495,10 +502,10 @@ const TT_PRODUCTS = [
     brand: "RoboKit",
     category: "robotics",
     price: 290,
-    img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&h=640&fit=crop",
+    img:     ttImg("servo,motor", 1161),
     gallery: [
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&h=900&fit=crop",
-      "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=1200&h=900&fit=crop"
+      ttImg("servo,motor",       1161, 1200, 900),
+      ttImg("electronics,servo", 1162, 1200, 900)
     ],
     badge: "Sale",
     salePrice: 220,
