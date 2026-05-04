@@ -1,4 +1,4 @@
-/* TeknikkTorget — home.js
+/* TeknikkTorget - home.js
    Featured products + filter pills on homepage. */
 
 (function () {

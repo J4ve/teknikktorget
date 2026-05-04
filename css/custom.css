@@ -1,9 +1,9 @@
-/* TeknikkTorget — custom theme overrides on Bootstrap 5.3
+/* TeknikkTorget - custom theme overrides on Bootstrap 5.3
    Design language ported from StitchShi.html (Material 3 expressive palette + Work Sans).
    Blueprint refs: §5.1 (global structure), §6.3 (responsive breakpoints), §10 (perf). */
 
 :root {
-  /* StitchShi palette (Material 3) — light theme */
+  /* StitchShi palette (Material 3) - light theme */
   --tt-primary:           #00346f;
   --tt-primary-container: #004a99;
   --tt-on-primary:        #ffffff;
@@ -41,7 +41,7 @@
   --bs-body-bg:           var(--tt-surface-bg);
 }
 
-/* Dark mode (Material You inspired) — flip core surface tokens */
+/* Dark mode (Material You inspired) - flip core surface tokens */
 html[data-tt-theme="dark"] {
   --tt-primary:           #abc7ff;
   --tt-primary-container: #d7e2ff;
@@ -102,7 +102,7 @@ body { font-family: var(--bs-body-font-family); color: var(--tt-text-primary); b
 }
 .tt-brand:hover { color: var(--tt-primary-container); }
 
-/* Sticky navbar — StitchShi look */
+/* Sticky navbar - StitchShi look */
 .tt-navbar {
   background: color-mix(in srgb, var(--tt-surface-card) 92%, transparent);
   backdrop-filter: blur(8px);
@@ -198,12 +198,29 @@ html[data-tt-theme="dark"] .tt-hero { color: #ffffff; }
   color: #ffffff;
 }
 .tt-hero .lead { color: rgba(255,255,255,0.88); font-size: 1.1rem; max-width: 540px; }
+.tt-hero .btn-cta,
+.tt-hero .btn-cta-outline {
+  font-weight: 600; padding: 0.85rem 1.5rem; border-radius: 0.25rem;
+  font-size: 1rem; line-height: 1.25;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  text-decoration: none;
+}
 .tt-hero .btn-cta {
   background: var(--tt-tertiary-fixed-dim);
   color: var(--tt-on-tertiary-fixed);
-  border: 0; font-weight: 600; padding: 0.85rem 1.5rem; border-radius: 0.25rem;
+  border: 0;
 }
-.tt-hero .btn-cta:hover { background: #ffdbcc; }
+.tt-hero .btn-cta:hover { background: #ffdbcc; color: var(--tt-on-tertiary-fixed); }
+.tt-hero .btn-cta-outline {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.55);
+}
+.tt-hero .btn-cta-outline:hover {
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+  border-color: #ffffff;
+}
 
 /* Bento category grid */
 .tt-bento { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }

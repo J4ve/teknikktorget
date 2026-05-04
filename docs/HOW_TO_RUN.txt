@@ -1,11 +1,11 @@
-TeknikkTorget — How to Run Locally
+TeknikkTorget - How to Run Locally
 ==================================
 
-This is a static, fully client-side site — no build step, no server backend.
+This is a static, fully client-side site - no build step, no server backend.
 Any of the three options below will work.
 
 ----------------------------------------------------------------
-Option A — Open the file directly (easiest)
+Option A - Open the file directly (easiest)
 ----------------------------------------------------------------
 1. Open the `teknikktorget` folder in your file manager.
 2. Double-click `index.html`.
@@ -16,7 +16,7 @@ This project does not use ES modules, so it works fine. If you see
 console warnings about CORS or fonts, use Option B instead.
 
 ----------------------------------------------------------------
-Option B — Python's built-in server (recommended)
+Option B - Python's built-in server (recommended)
 ----------------------------------------------------------------
 Requires Python 3 (already on macOS / Linux; on Windows install from
 https://www.python.org/downloads/).
@@ -31,7 +31,7 @@ https://www.python.org/downloads/).
 5. To stop the server, press Ctrl + C in the terminal.
 
 ----------------------------------------------------------------
-Option C — Node-based server
+Option C - Node-based server
 ----------------------------------------------------------------
 Requires Node 16+.
 
@@ -42,7 +42,7 @@ Requires Node 16+.
 3. Open the URL the command prints (default http://localhost:3000).
 
 ----------------------------------------------------------------
-Option D — VS Code "Live Server" extension
+Option D - VS Code "Live Server" extension
 ----------------------------------------------------------------
 1. Open the `teknikktorget` folder in VS Code.
 2. Install the "Live Server" extension by Ritwick Dey (if not already).
@@ -66,7 +66,7 @@ Try these:
 5. Toggle 'Retro Mode' from the header or footer.
 
 ----------------------------------------------------------------
-Dependencies (loaded from CDN — internet required first run)
+Dependencies (loaded from CDN - internet required first run)
 ----------------------------------------------------------------
 - Bootstrap 5.3.3       https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/
 - Material Symbols      https://fonts.googleapis.com/...

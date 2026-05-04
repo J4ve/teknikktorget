@@ -1,4 +1,4 @@
-/* TeknikkTorget — retro.js
+/* TeknikkTorget - retro.js
    Retro Mode toggle: dense compact arngren-true layout. Blueprint §5.6. */
 
 (function () {

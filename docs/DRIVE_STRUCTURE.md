@@ -1,4 +1,4 @@
-# Submission package — Google Drive structure
+# Submission package - Google Drive structure
 
 Recommended Drive folder layout for the academic submission.
 
@@ -34,7 +34,7 @@ TeknikkTorget_Final_Submission/
 ## README.txt (template)
 
 ```
-TeknikkTorget — HCI Final Project
+TeknikkTorget - HCI Final Project
 ==================================
 Open 01_Source_Code/teknikktorget/index.html in any modern browser
 (or follow 02_Documentation/HOW_TO_RUN.txt for a local server).

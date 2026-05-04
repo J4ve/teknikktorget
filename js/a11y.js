@@ -1,4 +1,4 @@
-/* TeknikkTorget — a11y.js
+/* TeknikkTorget - a11y.js
    Side-sheet panel + persisted prefs (font, contrast, dark, motion, audio, grid cols, language).
    All flags applied to <html> so descendants (incl. Bootstrap rems) inherit. */
 
@@ -188,7 +188,7 @@
       });
     });
 
-    // Header navbar lang pill (if present) — sync
+    // Header navbar lang pill (if present) - sync
     document.querySelectorAll('[data-tt-lang-toggle]').forEach(btn => {
       btn.addEventListener('click', () => {
         const next = (TT?.lang || 'en') === 'en' ? 'no' : 'en';

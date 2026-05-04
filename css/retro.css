@@ -1,4 +1,4 @@
-/* TeknikkTorget — Retro Mode (true-arngren palette)
+/* TeknikkTorget - Retro Mode (true-arngren palette)
    Blueprint §5.6: nostalgic Arngren-density, but functional.
    Honour the original arngren.net visual language: white background, gray outlines,
    plain serif text, dense compact grid, blue underlined links. No colourful flourishes.
@@ -29,7 +29,7 @@ html[data-tt-mode="retro"] body {
   font-family: "Times New Roman", Georgia, serif;
 }
 
-/* Navbar — flat white with gray bottom rule, brand becomes serif bold */
+/* Navbar - flat white with gray bottom rule, brand becomes serif bold */
 html[data-tt-mode="retro"] .tt-navbar {
   background: #ffffff !important;
   border-bottom: 1px solid var(--tt-border-subtle);
@@ -43,7 +43,7 @@ html[data-tt-mode="retro"] .tt-brand {
   text-transform: uppercase;
 }
 
-/* Hero — drop the gradient, plain white block with bordered title */
+/* Hero - drop the gradient, plain white block with bordered title */
 html[data-tt-mode="retro"] .tt-hero {
   background: #ffffff;
   color: var(--tt-text-primary);
@@ -182,7 +182,7 @@ html[data-tt-mode="retro"] .tt-sidebar .cat-link.is-active {
 html[data-tt-mode="retro"] .tt-footer { background: var(--tt-surface-card); border-top-color: var(--tt-border-subtle); }
 html[data-tt-mode="retro"] .tt-footer a { color: var(--tt-primary); text-decoration: underline; }
 
-/* Marquee strip — gray rule with text scrolling at slow pace */
+/* Marquee strip - gray rule with text scrolling at slow pace */
 .tt-retro-marquee {
   background: var(--tt-surface-low);
   color: var(--tt-text-primary);

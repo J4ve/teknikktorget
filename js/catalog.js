@@ -1,4 +1,4 @@
-/* TeknikkTorget — catalog.js
+/* TeknikkTorget - catalog.js
    Catalog page: filters, pagination, view toggle, autocomplete-deep-link.
    Blueprint §5.2/§5.3: 12 items/page, removable filter chips, lazy images. */
 

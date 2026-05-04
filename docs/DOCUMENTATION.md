@@ -1,4 +1,4 @@
-# TeknikkTorget — Implementation Report
+# TeknikkTorget - Implementation Report
 
 > Course: HCI · Final Project
 > Submission target: 3-page comparison report, screenshots, video, source bundle.
@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-TeknikkTorget is a Bootstrap 5.3 e-commerce platform that operationalises the HCI blueprint compiled across the six learning tasks. It is locally runnable, accessibility-aware, and demonstrates three flagship pages — Homepage, Catalog and Cart/Checkout — designed to resolve the structural usability failures of arngren.net.
+TeknikkTorget is a Bootstrap 5.3 e-commerce platform that operationalises the HCI blueprint compiled across the six learning tasks. It is locally runnable, accessibility-aware, and demonstrates three flagship pages - Homepage, Catalog and Cart/Checkout - designed to resolve the structural usability failures of arngren.net.
 
 Stack
 - Bootstrap 5.3 (CSS + JS) + custom CSS theme tokens (StitchShi palette)
@@ -42,11 +42,11 @@ Stack
 - Add-to-cart buttons trigger a toast, update the cart badge, and announce via the ARIA live region.
 
 **HCI principles demonstrated**
-- **Predictability / Familiarity** (Dix): top search, cart icon top-right, sidebar categories — Amazon/Shopee mental models reused.
+- **Predictability / Familiarity** (Dix): top search, cart icon top-right, sidebar categories - Amazon/Shopee mental models reused.
 - **Synthesisability**: every product card follows the same schema (badge → image → chips → name → stars → price → add-to-cart), so a user learns one and reads any.
 - **Recognition over recall** (Nielsen): category labels paired with Material Symbols icons.
 - **Cognitive load reduction** (Sweller): hero/categories/featured limited to one visual focus per row; advanced specs hidden behind Quick View.
-- **Closure** (Shneiderman): every interaction emits a feedback signal — toast, badge count, ARIA announcement.
+- **Closure** (Shneiderman): every interaction emits a feedback signal - toast, badge count, ARIA announcement.
 
 ---
 
@@ -69,7 +69,7 @@ Stack
 - URL params `?cat=…`, `?q=…`, `?open=<id>` deep-link from the homepage and search dropdown. `?open=<id>` auto-opens the Quick View modal.
 - Filter changes update the chip row and the result count instantly; the grid is re-rendered (no full page navigation), and the count is announced for screen readers.
 - Quick View modal exposes the full spec sheet without leaving the grid; `Esc` closes.
-- Pagination paginates server-style — 12 per page, Prev/Next buttons disabled at extremes.
+- Pagination paginates server-style - 12 per page, Prev/Next buttons disabled at extremes.
 
 **HCI principles demonstrated**
 - **Multi-threading & substitutivity** (Dix): users can compare specs in Quick View without losing scroll position.
@@ -100,14 +100,14 @@ Stack
 **What happens on the page**
 - Every state change recomputes subtotal → discount → shipping → VAT → total, and re-renders the side panel.
 - Form validation runs per-field on blur, then again on submit; first invalid field is focused and an error toast is announced.
-- Successful submit clears the cart, generates `TT-XXXXXXX` order id, and shows a confirmation block — replacing the entire page region rather than navigating, so back-button never re-submits.
+- Successful submit clears the cart, generates `TT-XXXXXXX` order id, and shows a confirmation block - replacing the entire page region rather than navigating, so back-button never re-submits.
 
 **HCI principles demonstrated**
 - **Observability**: free-shipping bar shows progress toward a goal; the totals card updates on each interaction.
 - **Recoverability**: per-line remove + qty stepper, no "are you sure" dialogs needed; promo errors are reversible.
-- **Closure** (Shneiderman): the confirmation screen is unambiguous — large green icon, order number, two next-step CTAs.
+- **Closure** (Shneiderman): the confirmation screen is unambiguous - large green icon, order number, two next-step CTAs.
 - **Error prevention** (Nielsen): masking + auto-formatting of card / expiry; numeric-only zip; checkbox-gated terms.
-- **Trust & familiarity**: SSL/PCI/return badges visible near the pay button — directly tackling Arngren's lack of payment trust.
+- **Trust & familiarity**: SSL/PCI/return badges visible near the pay button - directly tackling Arngren's lack of payment trust.
 
 ---
 
@@ -120,8 +120,8 @@ Stack
 | Keyboard nav | Tab/Enter/Space/Esc/Arrows everywhere; Ctrl+K focus search | Flexibility · accelerators |
 | Skip-to-content link | Top of every page | WCAG 2.1 SC 2.4.1 |
 | Accessibility toolbar | Floating settings: text size 16/18/20/22, contrast, motion, audio | Universal design (Mace) |
-| Retro Mode | Dense vintage layout while preserving cart/search/a11y | Customizability — honours the legacy fan persona |
-| Welcome guide | First-visit only | Recognition over recall — orient the cold-start user |
+| Retro Mode | Dense vintage layout while preserving cart/search/a11y | Customizability - honours the legacy fan persona |
+| Welcome guide | First-visit only | Recognition over recall - orient the cold-start user |
 | Floating help (FAB) | All pages, lower-right | Help and documentation (Nielsen #10) |
 
 ---
@@ -149,7 +149,7 @@ The implementation directly satisfies the Prompt 1–5 checklists from `PromptLi
 - ✅ Bootstrap 5 CSS/JS linked in every page
 - ✅ Responsive viewport + Bootstrap grid
 - ✅ `custom.css` loads after Bootstrap (overrides win)
-- ✅ Each JS file is wrapped in an IIFE — no global leaks beyond the explicit `TT` namespace
+- ✅ Each JS file is wrapped in an IIFE - no global leaks beyond the explicit `TT` namespace
 - ✅ All paths relative; project runs over `file://` or any static server
 - ✅ Brand strictly "TeknikkTorget" in all UI copy / titles / metadata
 - ✅ Welcome guide shows once, dismisses, persists in `localStorage`

@@ -1,4 +1,4 @@
-/* TeknikkTorget — ui-components.js
+/* TeknikkTorget - ui-components.js
    Shared visual primitives: product card renderer, list row, toast, Quick View modal, star ratings.
    Blueprint §4.1 (one card schema), §6.1 (toast feedback). */
 
@@ -36,7 +36,7 @@
           : ''}
         <span class="material-symbols-outlined" aria-hidden="true" style="${p.img?'display:none':'display:block'}">${p.icon || 'box'}</span>
         <div class="quick-view">
-          <button type="button" class="btn" onclick="event.preventDefault();event.stopPropagation();TT.openQuickView(${p.id})" aria-label="${TT.t('card.quickView')} — ${p.name}">${TT.t('card.quickView')}</button>
+          <button type="button" class="btn" onclick="event.preventDefault();event.stopPropagation();TT.openQuickView(${p.id})" aria-label="${TT.t('card.quickView')} - ${p.name}">${TT.t('card.quickView')}</button>
         </div>
       </a>
       <div class="body">
@@ -53,7 +53,7 @@
             <span class="price">${TT.formatPrice(TT.priceOf(p))}</span>
             ${onSale ? `<span class="price-old">${TT.formatPrice(p.price)}</span>` : ''}
           </div>
-          <button type="button" class="add-btn" onclick="event.stopPropagation();TT.addToCart(${p.id})" aria-label="${TT.t('card.addToCart')} — ${p.name}">
+          <button type="button" class="add-btn" onclick="event.stopPropagation();TT.addToCart(${p.id})" aria-label="${TT.t('card.addToCart')} - ${p.name}">
             <span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span>
           </button>
         </div>

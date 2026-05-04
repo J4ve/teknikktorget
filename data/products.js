@@ -1,4 +1,4 @@
-/* TeknikkTorget — Product Catalog
+/* TeknikkTorget - Product Catalog
    Blueprint §5.2: Card schema = badge, image, name, desc, price, rating, CTA, Quick View.
    Blueprint §5.3: Filterable specs (motorPower, batteryType, brand, scale).
 
@@ -226,8 +226,8 @@ const TT_PRODUCTS = [
     badge: "",
     rating: 4,
     reviews: 53,
-    desc: "Complete FPV racing drone kit with digital goggles, controller, 3 batteries — ready to fly.",
-    descNo: "Komplett FPV-racingdrone-pakke med digitale briller, kontroller og 3 batterier — klar til å fly.",
+    desc: "Complete FPV racing drone kit with digital goggles, controller, 3 batteries - ready to fly.",
+    descNo: "Komplett FPV-racingdrone-pakke med digitale briller, kontroller og 3 batterier - klar til å fly.",
     chips: ["120 km/h", "FPV Goggles"],
     chipsNo: ["120 km/t", "FPV-briller"],
     specs: {
@@ -258,8 +258,8 @@ const TT_PRODUCTS = [
     badge: "New",
     rating: 4,
     reviews: 94,
-    desc: "Central hub for smart devices — Zigbee, Z-Wave, Matter, WiFi 6E, voice control.",
-    descNo: "Sentral hub for smartenheter — Zigbee, Z-Wave, Matter, WiFi 6E og talestyring.",
+    desc: "Central hub for smart devices - Zigbee, Z-Wave, Matter, WiFi 6E, voice control.",
+    descNo: "Sentral hub for smartenheter - Zigbee, Z-Wave, Matter, WiFi 6E og talestyring.",
     chips: ["Matter", "WiFi 6E"],
     chipsNo: ["Matter", "WiFi 6E"],
     specs: {

@@ -1,4 +1,4 @@
-/* TeknikkTorget — validation.js
+/* TeknikkTorget - validation.js
    Inline checkout validation. Blueprint §5.4: SSL banner, masked card, CVV tooltip. */
 
 (function () {

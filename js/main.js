@@ -1,4 +1,4 @@
-/* TeknikkTorget — main.js
+/* TeknikkTorget - main.js
    Global init: shared state, navbar search, cart store, mini-cart, welcome guide, page-agnostic helpers.
    Blueprint §4.1 (predictability), §5.1 (sticky nav), §5.5 (welcome guide), §6.1 (feedback). */
 

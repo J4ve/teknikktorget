@@ -1,4 +1,4 @@
-/* TeknikkTorget — cart.js
+/* TeknikkTorget - cart.js
    Full cart page rendering + free-shipping bar + zip estimator + promo code.
    Blueprint §5.4 / §6.1. */
 

@@ -1,4 +1,4 @@
-/* TeknikkTorget — Accessibility overrides
+/* TeknikkTorget - Accessibility overrides
    Blueprint §6.2: font scale, high contrast, reduced motion, audio toggle.
    Toggled via html data attributes set by js/a11y.js, persisted to localStorage. */
 
@@ -63,7 +63,7 @@ html[data-tt-motion="reduced"] *::after {
   *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
-/* A11y panel — slide-in side sheet */
+/* A11y panel - slide-in side sheet */
 .tt-a11y-panel {
   position: fixed; right: -360px; top: 0; bottom: 0; width: 340px; max-width: 90vw;
   background: var(--tt-surface-card); color: var(--tt-text-primary);
@@ -100,7 +100,7 @@ html[data-tt-motion="reduced"] *::after {
 .tt-a11y-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1084; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
 .tt-a11y-backdrop.is-open { opacity: 1; pointer-events: auto; }
 
-/* Focus rings — always visible */
+/* Focus rings - always visible */
 :focus-visible {
   outline: 3px solid var(--tt-secondary) !important;
   outline-offset: 2px;

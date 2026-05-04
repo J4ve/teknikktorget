@@ -1,4 +1,4 @@
-/* TeknikkTorget — product.js
+/* TeknikkTorget - product.js
    Detail page: hero gallery + qty stepper + add-to-cart, full specs, recommendations. */
 
 (function () {
@@ -53,7 +53,7 @@
     const cat = TT_CATEGORIES.find(c => c.id === raw.category);
     const catLabel = TT.localizedCategory ? TT.localizedCategory(cat || { label: raw.category }) : raw.category;
 
-    document.title = p.name + ' — TeknikkTorget';
+    document.title = p.name + ' - TeknikkTorget';
 
     root.innerHTML = `
       <nav class="tt-breadcrumb" aria-label="Breadcrumb">
