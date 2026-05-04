@@ -197,15 +197,45 @@
         </div>
         <div class="flex-grow-1 min-w-0">
           <div class="fw-semibold small text-truncate">${p.name}</div>
-          <div class="text-muted small">${TT.t('product.qty')} ${it.qty} × ${TT.formatPrice(TT.priceOf(p))}</div>
-          <div class="fw-bold small">${TT.formatPrice(TT.priceOf(p)*it.qty)}</div>
+          <div class="text-muted small">${TT.formatPrice(TT.priceOf(p))} ${TT.lang === 'no' ? 'pr.' : 'each'}</div>
+          <div class="d-flex align-items-center justify-content-between mt-1 gap-2">
+            <div class="input-group input-group-sm" style="width:96px">
+              <button class="btn btn-outline-secondary px-2" type="button" data-mc-dec="${raw.id}" aria-label="−">−</button>
+              <input type="number" min="1" max="99" class="form-control text-center px-1" value="${it.qty}" aria-label="${TT.t('product.qty')} ${p.name}" data-mc-qty="${raw.id}" style="min-width:0">
+              <button class="btn btn-outline-secondary px-2" type="button" data-mc-inc="${raw.id}" aria-label="+">+</button>
+            </div>
+            <div class="fw-bold small">${TT.formatPrice(TT.priceOf(p)*it.qty)}</div>
+          </div>
         </div>
-        <button type="button" class="btn btn-sm btn-link text-danger p-1" onclick="TT.removeFromCart(${p.id})" aria-label="${TT.t('card.remove')} ${p.name}">
+        <button type="button" class="btn btn-sm btn-link text-danger p-1 align-self-start" onclick="TT.removeFromCart(${raw.id})" aria-label="${TT.t('card.remove')} ${p.name}">
           <span class="material-symbols-outlined" style="font-size:18px">delete</span>
         </button>
       </div>`;
     }).join('');
     sub.textContent = TT.formatPrice(TT.cartSubtotal());
+
+    // Bind +/− steppers (event delegation per render)
+    body.querySelectorAll('[data-mc-inc]').forEach(b =>
+      b.addEventListener('click', () => {
+        const id = +b.dataset.mcInc;
+        const cur = TT.getCart().find(i => i.id === id)?.qty || 0;
+        TT.updateCartItem(id, Math.min(99, cur + 1));
+      })
+    );
+    body.querySelectorAll('[data-mc-dec]').forEach(b =>
+      b.addEventListener('click', () => {
+        const id = +b.dataset.mcDec;
+        const cur = TT.getCart().find(i => i.id === id)?.qty || 0;
+        TT.updateCartItem(id, Math.max(1, cur - 1));
+      })
+    );
+    body.querySelectorAll('[data-mc-qty]').forEach(inp =>
+      inp.addEventListener('change', (e) => {
+        const id = +e.target.dataset.mcQty;
+        const v = Math.max(1, Math.min(99, +e.target.value || 1));
+        TT.updateCartItem(id, v);
+      })
+    );
   }
   document.addEventListener('tt:cart-changed', () => {
     if (document.querySelector('.tt-minicart.is-open')) renderMiniCart();
