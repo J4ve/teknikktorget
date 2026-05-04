@@ -1,0 +1,97 @@
+/* TeknikkTorget — Accessibility overrides
+   Blueprint §6.2: font scale, high contrast, reduced motion, audio toggle.
+   Toggled via body data attributes set by js/a11y.js, persisted to localStorage. */
+
+/* Font scale (default 16, up to 22) */
+body[data-tt-font="16"] { font-size: 16px; }
+body[data-tt-font="18"] { font-size: 18px; }
+body[data-tt-font="20"] { font-size: 20px; }
+body[data-tt-font="22"] { font-size: 22px; }
+
+/* High contrast: light-on-dark inverted */
+body[data-tt-contrast="high"] {
+  --tt-surface-bg:        #000000;
+  --tt-surface-card:      #0d0d0d;
+  --tt-surface-low:       #1a1a1a;
+  --tt-surface-variant:   #262626;
+  --tt-text-primary:      #ffffff;
+  --tt-text-secondary:    #f0f0f0;
+  --tt-border-subtle:     #ffffff;
+  --tt-outline-variant:   #cccccc;
+  --tt-primary:           #ffd600;
+  --tt-on-primary:        #000000;
+  --tt-primary-container: #fff176;
+  --tt-secondary:         #80d8ff;
+  --tt-accent-sale:       #ff5252;
+  background: #000; color: #fff;
+}
+body[data-tt-contrast="high"] .tt-navbar { background: #000; border-bottom-color: #fff; }
+body[data-tt-contrast="high"] .tt-product-card,
+body[data-tt-contrast="high"] .tt-bento .bento-card,
+body[data-tt-contrast="high"] .modal-content,
+body[data-tt-contrast="high"] .tt-minicart,
+body[data-tt-contrast="high"] .tt-footer {
+  background: #0d0d0d; color: #fff; border-color: #fff;
+}
+body[data-tt-contrast="high"] .form-control,
+body[data-tt-contrast="high"] .form-select {
+  background: #1a1a1a; color: #fff; border-color: #fff;
+}
+body[data-tt-contrast="high"] .btn-primary,
+body[data-tt-contrast="high"] .tt-product-card .add-btn { background: #ffd600; color: #000; }
+body[data-tt-contrast="high"] a { color: #80d8ff; }
+body[data-tt-contrast="high"] .tt-pill.is-active { background: #ffd600; color: #000; }
+
+/* Reduced motion */
+body[data-tt-motion="reduced"] *,
+body[data-tt-motion="reduced"] *::before,
+body[data-tt-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Honor system preference too */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* A11y toolbar */
+.tt-a11y-toolbar {
+  position: fixed; right: 1.25rem; bottom: 5.5rem; z-index: 1041;
+  background: #fff; border: 1px solid var(--tt-border-subtle);
+  border-radius: 0.75rem; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  padding: 1rem; min-width: 240px; display: none;
+}
+.tt-a11y-toolbar.is-open { display: block; }
+.tt-a11y-toolbar h3 { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.75rem; }
+.tt-a11y-toolbar .row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.85rem; }
+.tt-a11y-toolbar button.size {
+  border: 1px solid var(--tt-border-subtle); background: #fff; color: var(--tt-text-primary);
+  border-radius: 0.25rem; padding: 0.25rem 0.6rem; font-weight: 600;
+}
+.tt-a11y-toolbar button.size.is-active { background: var(--tt-primary); color: var(--tt-on-primary); border-color: var(--tt-primary); }
+
+/* Focus rings — always visible, never suppressed */
+:focus-visible {
+  outline: 3px solid var(--tt-secondary) !important;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+body[data-tt-contrast="high"] :focus-visible {
+  outline-color: #ffd600 !important;
+}
+
+/* Live region for announcements (visually hidden) */
+#tt-live-region {
+  position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;
+}
+
+/* Skip link */
+.tt-skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--tt-primary); color: var(--tt-on-primary);
+  padding: 0.5rem 1rem; z-index: 9999; border-radius: 0 0 0.5rem 0;
+}
+.tt-skip-link:focus { left: 0; }

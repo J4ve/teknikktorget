@@ -1,0 +1,82 @@
+/* TeknikkTorget — Retro Mode
+   Blueprint §5.6: nostalgic Arngren-density, but functional.
+   Compact grid, smaller imagery, dense info, while keeping cart/search/a11y/responsive intact.
+   Toggled via body[data-tt-mode="retro"] from js/retro.js. */
+
+body[data-tt-mode="retro"] {
+  --tt-surface-bg:    #fdfbe7;
+  --tt-surface-card:  #fffce0;
+  --tt-surface-low:   #fff8c0;
+  --tt-text-primary:  #1d1d1d;
+  --tt-text-secondary:#3a3a3a;
+  --tt-border-subtle: #b48a00;
+  --tt-primary:       #b30000;
+  --tt-secondary:     #1414c8;
+  --tt-accent-sale:   #ff7f00;
+  font-family: "Times New Roman", Georgia, serif;
+}
+body[data-tt-mode="retro"] .tt-navbar { background: #fffce0; border-bottom: 2px solid var(--tt-border-subtle); }
+body[data-tt-mode="retro"] .tt-brand  { color: var(--tt-primary); font-family: "Comic Sans MS", "Times New Roman", serif; }
+body[data-tt-mode="retro"] .tt-hero   { background: repeating-linear-gradient(45deg, #fff8c0, #fff8c0 12px, #ffe97a 12px, #ffe97a 24px); color: #1d1d1d; }
+body[data-tt-mode="retro"] .tt-hero h1 { color: var(--tt-primary); font-weight: 900; text-shadow: 2px 2px 0 var(--tt-retro-accent); }
+body[data-tt-mode="retro"] .tt-hero .lead { color: var(--tt-text-primary); }
+body[data-tt-mode="retro"] .tt-hero .btn-cta { background: var(--tt-retro-accent); color: #1d1d1d; border: 2px solid #1d1d1d; }
+
+/* Dense product grid (5–6 cols on desktop) */
+@media (min-width: 768px) {
+  body[data-tt-mode="retro"] .tt-grid-products { display: grid !important; grid-template-columns: repeat(5, 1fr); gap: 0.5rem !important; }
+}
+@media (min-width: 1200px) {
+  body[data-tt-mode="retro"] .tt-grid-products { grid-template-columns: repeat(6, 1fr); }
+}
+
+body[data-tt-mode="retro"] .tt-product-card {
+  border-radius: 0; border: 1px solid var(--tt-border-subtle);
+  background: var(--tt-surface-card);
+  box-shadow: none;
+}
+body[data-tt-mode="retro"] .tt-product-card:hover { transform: none; box-shadow: 0 0 0 2px var(--tt-primary); }
+body[data-tt-mode="retro"] .tt-product-card .body { padding: 0.4rem; }
+body[data-tt-mode="retro"] .tt-product-card .name {
+  font-size: 0.75rem; font-weight: 700; color: var(--tt-secondary);
+  text-decoration: underline; -webkit-line-clamp: 3;
+}
+body[data-tt-mode="retro"] .tt-product-card .price { font-size: 0.95rem; color: var(--tt-primary); font-weight: 900; }
+body[data-tt-mode="retro"] .tt-product-card .chips,
+body[data-tt-mode="retro"] .tt-product-card .stars,
+body[data-tt-mode="retro"] .tt-product-card .reviews { display: none; }
+body[data-tt-mode="retro"] .tt-product-card .add-btn {
+  background: var(--tt-retro-accent); color: #1d1d1d; border: 1px solid #1d1d1d;
+}
+
+/* Bento becomes plain compressed list of category links */
+body[data-tt-mode="retro"] .tt-bento { grid-auto-rows: 80px; gap: 0.4rem; }
+body[data-tt-mode="retro"] .tt-bento .bento-lg { grid-column: span 1; grid-row: span 1; }
+body[data-tt-mode="retro"] .tt-bento .bento-card {
+  border: 1px solid var(--tt-border-subtle); border-radius: 0; min-height: 80px; background: var(--tt-surface-low);
+}
+body[data-tt-mode="retro"] .tt-bento .bento-card img { display: none; }
+body[data-tt-mode="retro"] .tt-bento .bento-card .scrim { background: transparent; }
+body[data-tt-mode="retro"] .tt-bento .bento-card .body { position: static; padding: 0.5rem; color: var(--tt-secondary); }
+body[data-tt-mode="retro"] .tt-bento .bento-card h3 { font-size: 0.95rem; text-decoration: underline; }
+body[data-tt-mode="retro"] .tt-bento .bento-card p  { display: none; }
+
+/* Section heading */
+body[data-tt-mode="retro"] .tt-section-heading { font-size: 1.25rem; font-weight: 900; color: var(--tt-primary); text-decoration: underline; }
+
+/* Footer */
+body[data-tt-mode="retro"] .tt-footer { background: var(--tt-surface-low); border-top: 2px solid var(--tt-border-subtle); }
+
+/* Marquee mock — pure decoration, respects reduced-motion */
+body[data-tt-mode="retro"] .tt-retro-marquee {
+  background: var(--tt-primary); color: #fff;
+  padding: 0.35rem 0; font-weight: 700; text-align: center; overflow: hidden;
+}
+body[data-tt-mode="retro"][data-tt-motion="reduced"] .tt-retro-marquee span { animation: none !important; }
+@keyframes tt-marquee {
+  from { transform: translateX(100%); } to { transform: translateX(-100%); }
+}
+body[data-tt-mode="retro"] .tt-retro-marquee span {
+  display: inline-block; white-space: nowrap;
+  animation: tt-marquee 18s linear infinite;
+}

@@ -1,0 +1,96 @@
+TeknikkTorget — How to Run Locally
+==================================
+
+This is a static, fully client-side site — no build step, no server backend.
+Any of the three options below will work.
+
+----------------------------------------------------------------
+Option A — Open the file directly (easiest)
+----------------------------------------------------------------
+1. Open the `teknikktorget` folder in your file manager.
+2. Double-click `index.html`.
+3. Your default browser will load the homepage.
+
+Note: A few browsers restrict ES6 module loading from `file://` URLs.
+This project does not use ES modules, so it works fine. If you see
+console warnings about CORS or fonts, use Option B instead.
+
+----------------------------------------------------------------
+Option B — Python's built-in server (recommended)
+----------------------------------------------------------------
+Requires Python 3 (already on macOS / Linux; on Windows install from
+https://www.python.org/downloads/).
+
+1. Open Terminal / PowerShell.
+2. cd into the project folder:
+       cd path/to/teknikktorget
+3. Start the server:
+       python -m http.server 8000
+4. In a browser, open:
+       http://localhost:8000
+5. To stop the server, press Ctrl + C in the terminal.
+
+----------------------------------------------------------------
+Option C — Node-based server
+----------------------------------------------------------------
+Requires Node 16+.
+
+1. cd path/to/teknikktorget
+2. Run:
+       npx serve .
+   (or:  npx http-server -p 8000)
+3. Open the URL the command prints (default http://localhost:3000).
+
+----------------------------------------------------------------
+Option D — VS Code "Live Server" extension
+----------------------------------------------------------------
+1. Open the `teknikktorget` folder in VS Code.
+2. Install the "Live Server" extension by Ritwick Dey (if not already).
+3. Right-click `index.html` -> "Open with Live Server".
+4. The site opens at http://127.0.0.1:5500/index.html and reloads
+   automatically when you edit a file.
+
+----------------------------------------------------------------
+What you should see
+----------------------------------------------------------------
+- index.html      Homepage with welcome guide on first visit
+- catalog.html    Filterable product grid
+- cart.html       Cart with free-shipping bar + estimator
+- checkout.html   Single-page checkout, validates inline
+
+Try these:
+1. Click 'Add to cart' on any card. A toast appears top-right.
+2. Press Ctrl+K. Search bar focuses. Type 'drone' and use arrow keys.
+3. Open the catalog and use the sidebar filters; chips appear above the grid.
+4. Open the accessibility icon (top-right). Toggle high contrast.
+5. Toggle 'Retro Mode' from the header or footer.
+
+----------------------------------------------------------------
+Dependencies (loaded from CDN — internet required first run)
+----------------------------------------------------------------
+- Bootstrap 5.3.3       https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/
+- Material Symbols      https://fonts.googleapis.com/...
+- Work Sans             https://fonts.googleapis.com/...
+
+If you need fully offline operation:
+1. Download bootstrap.min.css + bootstrap.bundle.min.js into /assets/lib/.
+2. Replace the two CDN <link>/<script> tags in each .html with the local
+   paths.
+3. The site will then run without network access (fonts will fall back
+   to system fonts).
+
+----------------------------------------------------------------
+Browser support
+----------------------------------------------------------------
+Tested on the latest stable Chrome, Firefox, Edge and Safari.
+Mobile-first; smallest tested viewport 360×640.
+
+----------------------------------------------------------------
+Troubleshooting
+----------------------------------------------------------------
+- Cart icon shows nothing after adding -> open DevTools console; check
+  that 'data/products.js' loaded (no 404). Reload over a server (Option B).
+- Fonts look generic -> CDN may be blocked; the site still works, only
+  visual polish is reduced.
+- Welcome guide reappears on every visit -> check that localStorage is
+  enabled in your browser (private/incognito mode disables persistence).
