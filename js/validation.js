@@ -5,17 +5,45 @@
   'use strict';
   const TT = window.TT;
 
+  const ERRS = {
+    en: {
+      email:   'Please enter a valid email (e.g. you@domain.com)',
+      name:    'Please enter your full name',
+      address: 'Please enter a street address',
+      city:    'Please enter a city',
+      zip:     'Postal code must be 4 digits',
+      country: 'Please choose a country',
+      card:    'Card number must be 13–19 digits',
+      expiry:  'Expiry format MM/YY',
+      cvv:     'CVV is 3 or 4 digits',
+      terms:   'You must accept the terms to continue'
+    },
+    no: {
+      email:   'Skriv inn en gyldig e-post (f.eks. du@domene.no)',
+      name:    'Skriv inn fullt navn',
+      address: 'Skriv inn en gateadresse',
+      city:    'Skriv inn en by',
+      zip:     'Postnummer må være 4 sifre',
+      country: 'Velg et land',
+      card:    'Kortnummer må være 13–19 sifre',
+      expiry:  'Utløp må være MM/ÅÅ',
+      cvv:     'CVV er 3 eller 4 sifre',
+      terms:   'Du må godta vilkårene for å fortsette'
+    }
+  };
+  const errFor = (k) => ((TT && ERRS[TT.lang]) || ERRS.en)[k];
+
   const RULES = {
-    email:   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Please enter a valid email (e.g. you@domain.com)',
-    name:    v => v.trim().length >= 2 || 'Please enter your full name',
-    address: v => v.trim().length >= 4 || 'Please enter a street address',
-    city:    v => v.trim().length >= 2 || 'Please enter a city',
-    zip:     v => /^[0-9]{4}$/.test(v) || 'Postal code must be 4 digits',
-    country: v => !!v || 'Please choose a country',
-    card:    v => /^[0-9]{13,19}$/.test(v.replace(/\s/g,'')) || 'Card number must be 13–19 digits',
-    expiry:  v => /^(0[1-9]|1[0-2])\s*\/\s*[0-9]{2}$/.test(v) || 'Expiry format MM/YY',
-    cvv:     v => /^[0-9]{3,4}$/.test(v) || 'CVV is 3 or 4 digits',
-    terms:   v => !!v || 'You must accept the terms to continue'
+    email:   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || errFor('email'),
+    name:    v => v.trim().length >= 2 || errFor('name'),
+    address: v => v.trim().length >= 4 || errFor('address'),
+    city:    v => v.trim().length >= 2 || errFor('city'),
+    zip:     v => /^[0-9]{4}$/.test(v) || errFor('zip'),
+    country: v => !!v || errFor('country'),
+    card:    v => /^[0-9]{13,19}$/.test(v.replace(/\s/g,'')) || errFor('card'),
+    expiry:  v => /^(0[1-9]|1[0-2])\s*\/\s*[0-9]{2}$/.test(v) || errFor('expiry'),
+    cvv:     v => /^[0-9]{3,4}$/.test(v) || errFor('cvv'),
+    terms:   v => !!v || errFor('terms')
   };
 
   function showError(input, msg) {
@@ -35,7 +63,6 @@
     input.classList.add('is-valid');
     input.setAttribute('aria-invalid', 'false');
   }
-
   function validateField(input) {
     const rule = RULES[input.dataset.rule];
     if (!rule) return true;
@@ -45,7 +72,6 @@
   }
 
   function setupForm(form) {
-    // Card masking: groups of 4
     const card = form.querySelector('[data-rule="card"]');
     if (card) card.addEventListener('input', () => {
       const digits = card.value.replace(/\D/g,'').slice(0,19);
@@ -67,9 +93,8 @@
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const fields = form.querySelectorAll('[data-rule]');
       let firstInvalid = null;
-      fields.forEach(f => {
+      form.querySelectorAll('[data-rule]').forEach(f => {
         if (!validateField(f) && !firstInvalid) firstInvalid = f;
       });
       if (firstInvalid) {
@@ -78,24 +103,20 @@
         TT.announce('Form contains errors. Please review highlighted fields.');
         return;
       }
-      // Successful submission — show confirmation
       const cart = TT.getCart();
-      if (!cart.length) {
-        TT.toast('Cart is empty', 'error');
-        return;
-      }
+      if (!cart.length) { TT.toast('Cart is empty', 'error'); return; }
       const orderId = 'TT-' + Date.now().toString().slice(-7);
       localStorage.setItem('tt_last_order', JSON.stringify({ id: orderId, when: new Date().toISOString(), items: cart }));
       TT.saveCart([]);
-      const summary = document.getElementById('tt-checkout-page');
-      summary.innerHTML = `<div class="text-center py-5">
+      const page = document.getElementById('tt-checkout-page');
+      page.innerHTML = `<div class="text-center py-5">
         <span class="material-symbols-outlined text-success" style="font-size:5rem" aria-hidden="true">check_circle</span>
-        <h1 class="h3 fw-bold mt-3">Order confirmed</h1>
-        <p class="text-muted">Order number <strong>${orderId}</strong> · A confirmation email has been sent.</p>
-        <a href="index.html" class="btn btn-primary mt-2">Back to home</a>
-        <a href="catalog.html" class="btn btn-outline-secondary mt-2 ms-2">Keep shopping</a>
+        <h1 class="h3 fw-bold mt-3">${TT.t('checkout.confirmed.title')}</h1>
+        <p class="text-muted">${TT.t('checkout.confirmed.body', { id: '<strong>'+orderId+'</strong>' }).replace('&lt;strong&gt;', '<strong>').replace('&lt;/strong&gt;', '</strong>')}</p>
+        <a href="index.html" class="btn btn-primary mt-2">${TT.t('checkout.confirmed.home')}</a>
+        <a href="catalog.html" class="btn btn-outline-secondary mt-2 ms-2">${TT.t('checkout.confirmed.shop')}</a>
       </div>`;
-      TT.announce('Order confirmed. Order number ' + orderId);
+      TT.announce(TT.t('checkout.confirmed.title') + ' ' + orderId);
       window.scrollTo({ top: 0 });
     });
   }

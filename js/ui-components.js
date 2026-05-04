@@ -1,6 +1,6 @@
 /* TeknikkTorget — ui-components.js
-   Shared visual primitives: product card renderer, toast, Quick View modal, star ratings.
-   Blueprint §4.1 (synthesisability — one card schema), §6.1 (toast feedback). */
+   Shared visual primitives: product card renderer, list row, toast, Quick View modal, star ratings.
+   Blueprint §4.1 (one card schema), §6.1 (toast feedback). */
 
 (function () {
   'use strict';
@@ -17,29 +17,35 @@
     return html;
   };
 
+  // Image fallback (src error -> swap to icon span)
+  TT.imgFallback = "this.onerror=null;this.style.display='none';this.parentElement.classList.add('img-failed');";
+
   // ---------- Product card -----------------------------------------------
-  TT.productCardHtml = (p) => {
+  TT.productCardHtml = (rawP) => {
+    const p = TT.localizedProduct ? TT.localizedProduct(rawP) : rawP;
     const onSale = !!p.salePrice;
     const badge = p.badge === 'Sale' || onSale
-      ? `<span class="badge-corner badge-sale">Sale</span>`
-      : (p.badge === 'New' ? `<span class="badge-corner badge-new">New</span>` : '');
+      ? `<span class="badge-corner badge-sale">${TT.t ? TT.t('badge.sale') || 'Sale' : 'Sale'}</span>`
+      : (p.badge === 'New' ? `<span class="badge-corner badge-new">${TT.t ? TT.t('badge.new') || 'New' : 'New'}</span>` : '');
+    const detailHref = `product.html?id=${p.id}`;
     return `<article class="tt-product-card" data-id="${p.id}" aria-label="${p.name}">
       ${badge}
-      <div class="media">
+      <a class="media" href="${detailHref}" aria-label="${p.name}" style="text-decoration:none;color:inherit">
         ${p.img
-          ? `<img loading="lazy" src="${p.img}" alt="${p.name}">`
-          : `<span class="material-symbols-outlined" aria-hidden="true">${p.icon || 'box'}</span>`}
+          ? `<img loading="lazy" src="${p.img}" alt="${p.name}" onerror="${TT.imgFallback}">`
+          : ''}
+        <span class="material-symbols-outlined" aria-hidden="true" style="${p.img?'display:none':'display:block'}">${p.icon || 'box'}</span>
         <div class="quick-view">
-          <button type="button" class="btn" onclick="TT.openQuickView(${p.id})" aria-label="Quick view of ${p.name}">Quick View</button>
+          <button type="button" class="btn" onclick="event.preventDefault();event.stopPropagation();TT.openQuickView(${p.id})" aria-label="${TT.t('card.quickView')} — ${p.name}">${TT.t('card.quickView')}</button>
         </div>
-      </div>
+      </a>
       <div class="body">
         <div class="chips" aria-hidden="true">
           ${(p.chips || []).map(c => `<span class="chip">${c}</span>`).join('')}
         </div>
-        <a class="name text-decoration-none" href="catalog.html?open=${p.id}">${p.name}</a>
+        <a class="name" href="${detailHref}">${p.name}</a>
         <div class="d-flex align-items-center mt-2">
-          <span class="stars" aria-label="${p.rating} out of 5 stars">${TT.starsHtml(p.rating)}</span>
+          <span class="stars" aria-label="${p.rating} / 5">${TT.starsHtml(p.rating)}</span>
           <span class="reviews">(${p.reviews})</span>
         </div>
         <div class="d-flex align-items-end justify-content-between mt-auto pt-2">
@@ -47,12 +53,41 @@
             <span class="price">${TT.formatPrice(TT.priceOf(p))}</span>
             ${onSale ? `<span class="price-old">${TT.formatPrice(p.price)}</span>` : ''}
           </div>
-          <button type="button" class="add-btn" onclick="TT.addToCart(${p.id})" aria-label="Add ${p.name} to cart">
+          <button type="button" class="add-btn" onclick="event.stopPropagation();TT.addToCart(${p.id})" aria-label="${TT.t('card.addToCart')} — ${p.name}">
             <span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span>
           </button>
         </div>
       </div>
     </article>`;
+  };
+
+  // ---------- List row ---------------------------------------------------
+  TT.productRowHtml = (rawP) => {
+    const p = TT.localizedProduct ? TT.localizedProduct(rawP) : rawP;
+    const onSale = !!p.salePrice;
+    return `<div class="tt-list-row">
+      <a class="thumb" href="product.html?id=${p.id}">
+        ${p.img ? `<img loading="lazy" src="${p.img}" alt="${p.name}" onerror="${TT.imgFallback}">` : ''}
+        <span class="material-symbols-outlined" aria-hidden="true" style="${p.img?'display:none':'display:block'}">${p.icon || 'box'}</span>
+      </a>
+      <div class="flex-grow-1 min-w-0">
+        <div class="d-flex justify-content-between gap-2">
+          <a href="product.html?id=${p.id}" class="fw-semibold text-decoration-none" style="color:var(--tt-text-primary)">${p.name}</a>
+          <div class="text-end">
+            <div class="fw-bold">${TT.formatPrice(TT.priceOf(p))}</div>
+            ${onSale ? `<small class="text-muted text-decoration-line-through">${TT.formatPrice(p.price)}</small>` : ''}
+          </div>
+        </div>
+        <div class="small text-muted mt-1">${p.desc}</div>
+        <div class="d-flex gap-1 mt-2 flex-wrap">
+          ${(p.chips||[]).map(c => `<span class="chip" style="background:var(--tt-surface-variant);font-size:.65rem;font-weight:700;padding:.15rem .4rem;border-radius:.2rem">${c}</span>`).join('')}
+        </div>
+        <div class="d-flex gap-2 mt-2">
+          <button type="button" class="btn btn-sm btn-primary" onclick="TT.addToCart(${p.id})" data-i18n="card.addToCart">${TT.t('card.addToCart')}</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="TT.openQuickView(${p.id})" data-i18n="card.quickView">${TT.t('card.quickView')}</button>
+        </div>
+      </div>
+    </div>`;
   };
 
   // ---------- Toast -------------------------------------------------------
@@ -79,32 +114,51 @@
   };
 
   // ---------- Quick View --------------------------------------------------
-  TT.openQuickView = (id) => {
-    const p = TT_PRODUCTS.find(x => x.id === id);
-    if (!p) return;
+  // Build modal once; use explicit close handler (don't rely solely on data-bs-dismiss
+  // because we re-render innerHTML on every open).
+  function ensureQvModal() {
     let modal = document.getElementById('tt-qv-modal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'tt-qv-modal';
-      modal.className = 'modal fade tt-qv';
-      modal.tabIndex = -1;
-      modal.setAttribute('aria-labelledby','tt-qv-title');
-      modal.innerHTML = `<div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content"></div>
-      </div>`;
-      document.body.appendChild(modal);
-    }
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'tt-qv-modal';
+    modal.className = 'modal fade tt-qv';
+    modal.tabIndex = -1;
+    modal.setAttribute('aria-labelledby', 'tt-qv-title');
+    modal.innerHTML = `<div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content position-relative"></div>
+    </div>`;
+    document.body.appendChild(modal);
+    // Delegate close click
+    modal.addEventListener('click', (e) => {
+      const closer = e.target.closest('[data-tt-qv-close]');
+      if (closer) {
+        e.preventDefault();
+        bootstrap.Modal.getOrCreateInstance(modal).hide();
+      }
+    });
+    // Esc key handled by Bootstrap (keyboard:true) but ensure focus management
+    return modal;
+  }
+
+  TT.openQuickView = (id) => {
+    const raw = TT_PRODUCTS.find(x => x.id === id);
+    if (!raw) return;
+    const p = TT.localizedProduct ? TT.localizedProduct(raw) : raw;
     const onSale = !!p.salePrice;
+    const modal = ensureQvModal();
+
     modal.querySelector('.modal-content').innerHTML = `
-      <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      <button type="button" class="qv-close" data-tt-qv-close aria-label="Close Quick View">
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
       <div class="modal-body">
         <div class="qv-grid">
           <div class="qv-img">
-            ${p.img ? `<img src="${p.img}" alt="${p.name}">`
-                    : `<span class="material-symbols-outlined" aria-hidden="true">${p.icon || 'box'}</span>`}
+            ${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="${TT.imgFallback}">` : ''}
+            <span class="material-symbols-outlined" aria-hidden="true" style="${p.img?'display:none':'display:block'}">${p.icon || 'box'}</span>
           </div>
           <div class="qv-info">
-            <span class="text-uppercase small text-secondary fw-semibold" style="letter-spacing:.06em">${p.category}</span>
+            <span class="text-uppercase small text-secondary fw-semibold" style="letter-spacing:.06em">${TT.localizedCategory ? TT.localizedCategory(TT_CATEGORIES.find(c=>c.id===raw.category) || {label:raw.category}) : raw.category}</span>
             <h2 id="tt-qv-title" class="h4 fw-bold mt-1">${p.name}</h2>
             <p class="text-muted small">${p.desc}</p>
             <div class="d-flex align-items-baseline gap-2 mb-3">
@@ -117,48 +171,17 @@
             <div class="d-flex gap-2">
               <button type="button" class="btn btn-primary flex-grow-1" data-tt-qv-add>
                 <span class="material-symbols-outlined align-middle me-1" aria-hidden="true">add_shopping_cart</span>
-                Add to cart
+                ${TT.t('card.addToCart')}
               </button>
-              <a href="catalog.html?open=${p.id}" class="btn btn-outline-secondary">Full details</a>
+              <a href="product.html?id=${raw.id}" class="btn btn-outline-secondary">${TT.t('card.fullDetails')}</a>
             </div>
           </div>
         </div>
       </div>`;
     modal.querySelector('[data-tt-qv-add]').addEventListener('click', () => {
-      TT.addToCart(p.id);
+      TT.addToCart(raw.id);
       bootstrap.Modal.getInstance(modal).hide();
     });
-    bootstrap.Modal.getOrCreateInstance(modal).show();
-  };
-
-  // ---------- A11y toolbar mount (on every page) -------------------------
-  TT.mountA11yToolbar = () => {
-    if (document.getElementById('tt-a11y-toolbar')) return;
-    const wrap = document.createElement('div');
-    wrap.id = 'tt-a11y-toolbar';
-    wrap.className = 'tt-a11y-toolbar';
-    wrap.setAttribute('role','region');
-    wrap.setAttribute('aria-label','Accessibility settings');
-    wrap.innerHTML = `
-      <h3>Accessibility</h3>
-      <div class="row">
-        <span>Text size</span>
-        <div class="d-flex gap-1">
-          <button type="button" class="size" data-font="16" aria-label="Default text">A</button>
-          <button type="button" class="size" data-font="18" aria-label="Large text">A+</button>
-          <button type="button" class="size" data-font="20" aria-label="Larger text">A++</button>
-          <button type="button" class="size" data-font="22" aria-label="Largest text">A+++</button>
-        </div>
-      </div>
-      <div class="row"><label for="tt-cb-contrast">High contrast</label>
-        <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" id="tt-cb-contrast"></div>
-      </div>
-      <div class="row"><label for="tt-cb-motion">Reduce motion</label>
-        <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" id="tt-cb-motion"></div>
-      </div>
-      <div class="row"><label for="tt-cb-audio">Audio cues</label>
-        <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" id="tt-cb-audio"></div>
-      </div>`;
-    document.body.appendChild(wrap);
+    bootstrap.Modal.getOrCreateInstance(modal, { keyboard: true, backdrop: true }).show();
   };
 })();

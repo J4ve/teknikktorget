@@ -14,7 +14,8 @@
     if (activePill === 'vehicles') list = list.filter(p => p.category === 'vehicles');
     if (activePill === 'sale')     list = list.filter(p => !!p.salePrice);
     list = list.slice(0, 8);
-    grid.innerHTML = list.map(p => `<div class="col-6 col-md-4 col-lg-3">${TT.productCardHtml(p)}</div>`).join('');
+    grid.classList.add('tt-grid-products');
+    grid.innerHTML = list.map(p => TT.productCardHtml(p)).join('');
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -27,5 +28,6 @@
       })
     );
     render();
+    document.addEventListener('tt:lang-changed', render);
   });
 })();

@@ -36,8 +36,9 @@
     return TT_PRODUCTS.filter(p => {
       if (state.q) {
         const q = state.q.toLowerCase();
-        if (!(p.name.toLowerCase().includes(q) ||
-              p.desc.toLowerCase().includes(q) ||
+        const np = TT.localizedProduct ? TT.localizedProduct(p) : p;
+        if (!(np.name.toLowerCase().includes(q) ||
+              np.desc.toLowerCase().includes(q) ||
               p.brand.toLowerCase().includes(q))) return false;
       }
       if (state.category !== 'all' && p.category !== state.category) return false;
@@ -64,15 +65,18 @@
     if (!wrap) return;
     const chips = [];
     if (state.q)                 chips.push({ k: 'q',           label: `“${state.q}”` });
-    if (state.category !== 'all') chips.push({ k: 'category',    label: 'Category: ' + state.category });
-    if (state.brand !== 'all')    chips.push({ k: 'brand',       label: 'Brand: ' + state.brand });
-    if (state.motorPower !== 'all') chips.push({ k: 'motorPower', label: 'Motor: ' + state.motorPower });
-    if (state.batteryType !== 'all') chips.push({ k: 'batteryType', label: 'Battery: ' + state.batteryType });
+    if (state.category !== 'all') {
+      const c = TT_CATEGORIES.find(x => x.id === state.category);
+      chips.push({ k: 'category', label: (TT.localizedCategory ? TT.localizedCategory(c||{label:state.category}) : state.category) });
+    }
+    if (state.brand !== 'all')    chips.push({ k: 'brand',       label: (TT.t('sidebar.brand')) + ': ' + state.brand });
+    if (state.motorPower !== 'all') chips.push({ k: 'motorPower', label: (TT.t('sidebar.motor')) + ': ' + state.motorPower });
+    if (state.batteryType !== 'all') chips.push({ k: 'batteryType', label: (TT.t('sidebar.battery')) + ': ' + state.batteryType });
     if (state.minPrice > 0 || state.maxPrice < 25000) chips.push({ k: 'price', label: `${TT.formatPrice(state.minPrice)}–${TT.formatPrice(state.maxPrice)}` });
     wrap.innerHTML = chips.length
       ? chips.map(c => `<button class="tt-filter-chip" type="button" data-clear="${c.k}">${c.label} <span class="x" aria-hidden="true">×</span><span class="visually-hidden">Remove</span></button>`).join('')
-        + '<button class="btn btn-sm btn-link" type="button" id="tt-clear-all">Clear all</button>'
-      : '<span class="text-muted small">No active filters</span>';
+        + `<button class="btn btn-sm btn-link" type="button" id="tt-clear-all">${TT.t('catalog.clearAll')}</button>`
+      : `<span class="text-muted small">${TT.t('catalog.noFilters')}</span>`;
   }
 
   function renderResults() {
@@ -86,63 +90,36 @@
     const slice = list.slice((state.page-1) * PER_PAGE, state.page * PER_PAGE);
 
     summary.textContent = total === 0
-      ? 'No products match your filters.'
-      : `Showing ${(state.page-1)*PER_PAGE + 1}–${Math.min(state.page*PER_PAGE, total)} of ${total} products`;
+      ? TT.t('catalog.empty.title')
+      : `${TT.t('catalog.summary.showing')} ${(state.page-1)*PER_PAGE + 1}–${Math.min(state.page*PER_PAGE, total)} ${TT.t('catalog.summary.of')} ${total} ${TT.t('catalog.summary.products')}`;
 
+    grid.classList.add('tt-grid-products');
     if (state.view === 'list') {
-      grid.className = 'd-flex flex-column gap-3 tt-grid-products';
+      grid.classList.add('tt-list-view');
       grid.innerHTML = slice.length
-        ? slice.map(p => listRowHtml(p)).join('')
-        : emptyState();
+        ? slice.map(p => TT.productRowHtml(p)).join('')
+        : `<div class="col-12 w-100">${emptyState()}</div>`;
     } else {
-      grid.className = 'row g-3 tt-grid-products';
+      grid.classList.remove('tt-list-view');
       grid.innerHTML = slice.length
-        ? slice.map(p => `<div class="col-6 col-md-4 col-lg-3">${TT.productCardHtml(p)}</div>`).join('')
-        : `<div class="col-12">${emptyState()}</div>`;
+        ? slice.map(p => TT.productCardHtml(p)).join('')
+        : `<div style="grid-column:1/-1">${emptyState()}</div>`;
     }
 
-    // Pagination
     let pag = '';
     for (let i = 1; i <= pages; i++) {
-      pag += `<button type="button" class="btn btn-sm ${i === state.page ? 'btn-primary' : 'btn-outline-secondary'}" data-page="${i}" aria-label="Go to page ${i}" ${i === state.page ? 'aria-current="page"' : ''}>${i}</button>`;
+      pag += `<button type="button" class="btn btn-sm ${i === state.page ? 'btn-primary' : 'btn-outline-secondary'}" data-page="${i}" aria-label="Page ${i}" ${i === state.page ? 'aria-current="page"' : ''}>${i}</button>`;
     }
     pagWrap.innerHTML = pages > 1 ? pag : '';
 
-    TT.announce(`${total} products. Page ${state.page} of ${pages}.`);
-  }
-
-  function listRowHtml(p) {
-    const onSale = !!p.salePrice;
-    return `<div class="card flex-row p-2 align-items-center" style="border-color:var(--tt-border-subtle)">
-      <div style="width:120px;height:120px;flex-shrink:0;background:var(--tt-surface-low);border-radius:.25rem;display:flex;align-items:center;justify-content:center;overflow:hidden">
-        ${p.img ? `<img loading="lazy" src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">`
-                : `<span class="material-symbols-outlined" style="font-size:3rem;color:var(--tt-outline-variant)" aria-hidden="true">${p.icon || 'box'}</span>`}
-      </div>
-      <div class="ps-3 flex-grow-1">
-        <div class="d-flex justify-content-between align-items-start gap-2">
-          <a href="catalog.html?open=${p.id}" class="fw-semibold text-decoration-none">${p.name}</a>
-          <div class="text-end">
-            <div class="fw-bold">${TT.formatPrice(TT.priceOf(p))}</div>
-            ${onSale ? `<small class="text-muted text-decoration-line-through">${TT.formatPrice(p.price)}</small>` : ''}
-          </div>
-        </div>
-        <div class="small text-muted">${p.desc}</div>
-        <div class="d-flex gap-2 mt-2">
-          ${(p.chips||[]).map(c => `<span class="chip" style="background:var(--tt-surface-variant);font-size:.65rem;font-weight:700;padding:.15rem .4rem;border-radius:.2rem">${c}</span>`).join('')}
-        </div>
-        <div class="d-flex gap-2 mt-2">
-          <button type="button" class="btn btn-sm btn-primary" onclick="TT.addToCart(${p.id})">Add to cart</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="TT.openQuickView(${p.id})">Quick view</button>
-        </div>
-      </div>
-    </div>`;
+    TT.announce(`${total} ${TT.t('catalog.summary.products')}. Page ${state.page} of ${pages}.`);
   }
 
   function emptyState() {
     return `<div class="text-center py-5 text-muted">
       <span class="material-symbols-outlined" style="font-size:3rem;opacity:.4" aria-hidden="true">search_off</span>
-      <p class="fw-semibold mb-1 mt-2">No matching products</p>
-      <button type="button" class="btn btn-sm btn-outline-primary" id="tt-empty-clear">Clear filters</button>
+      <p class="fw-semibold mb-1 mt-2">${TT.t('catalog.empty.title')}</p>
+      <button type="button" class="btn btn-sm btn-outline-primary" id="tt-empty-clear">${TT.t('catalog.empty.cta')}</button>
     </div>`;
   }
 
@@ -150,29 +127,40 @@
     const sel = document.getElementById('tt-brand-filter');
     if (!sel) return;
     const brands = [...new Set(TT_PRODUCTS.map(p => p.brand))].sort();
-    sel.innerHTML = '<option value="all">All brands</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
+    sel.innerHTML = `<option value="all">${TT.t('sidebar.brand.all')}</option>` + brands.map(b => `<option value="${b}">${b}</option>`).join('');
+    sel.value = state.brand;
   }
   function setupSpecLists() {
     const motors = [...new Set(TT_PRODUCTS.map(p => p.motorPower).filter(Boolean))].sort();
     const batts  = [...new Set(TT_PRODUCTS.map(p => p.batteryType).filter(Boolean))].sort();
     const m = document.getElementById('tt-motor-filter');
     const b = document.getElementById('tt-battery-filter');
-    if (m) m.innerHTML = '<option value="all">Any motor</option>' + motors.map(x => `<option value="${x}">${x}</option>`).join('');
-    if (b) b.innerHTML = '<option value="all">Any battery</option>' + batts.map(x => `<option value="${x}">${x}</option>`).join('');
+    if (m) { m.innerHTML = `<option value="all">${TT.t('sidebar.motor.any')}</option>` + motors.map(x => `<option value="${x}">${x}</option>`).join(''); m.value = state.motorPower; }
+    if (b) { b.innerHTML = `<option value="all">${TT.t('sidebar.battery.any')}</option>` + batts.map(x => `<option value="${x}">${x}</option>`).join(''); b.value = state.batteryType; }
   }
   function setupCategoryList() {
     const wrap = document.getElementById('tt-cat-list');
     if (!wrap) return;
     wrap.innerHTML = `<button class="cat-link ${state.category==='all'?'is-active':''}" data-cat="all" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">apps</span> All
+        <span class="material-symbols-outlined" aria-hidden="true">apps</span> ${TT.t('header.allCategories')}
       </button>` +
       TT_CATEGORIES.map(c => `<button class="cat-link ${state.category===c.id?'is-active':''}" data-cat="${c.id}" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">${c.icon}</span> ${c.label}
+          <span class="material-symbols-outlined" aria-hidden="true">${c.icon}</span> ${TT.localizedCategory ? TT.localizedCategory(c) : c.label}
         </button>`).join('');
+  }
+  function setupSortOptions() {
+    const sel = document.getElementById('tt-sort');
+    if (!sel) return;
+    sel.innerHTML = `
+      <option value="featured">${TT.t('catalog.sort.featured')}</option>
+      <option value="price-asc">${TT.t('catalog.sort.priceAsc')}</option>
+      <option value="price-desc">${TT.t('catalog.sort.priceDesc')}</option>
+      <option value="rating">${TT.t('catalog.sort.rating')}</option>
+      <option value="name">${TT.t('catalog.sort.name')}</option>`;
+    sel.value = state.sort;
   }
 
   function bind() {
-    // Sidebar categories
     document.getElementById('tt-cat-list')?.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-cat]');
       if (!btn) return;
@@ -180,7 +168,6 @@
       state.page = 1;
       setupCategoryList(); renderChips(); renderResults();
     });
-    // Filters
     document.getElementById('tt-brand-filter')?.addEventListener('change', (e) => {
       state.brand = e.target.value; state.page = 1; renderChips(); renderResults();
     });
@@ -202,8 +189,11 @@
     document.querySelectorAll('[data-view]').forEach(b =>
       b.addEventListener('click', () => {
         state.view = b.dataset.view;
-        document.querySelectorAll('[data-view]').forEach(x => x.classList.toggle('btn-primary', x === b));
-        document.querySelectorAll('[data-view]').forEach(x => x.classList.toggle('btn-outline-secondary', x !== b));
+        document.querySelectorAll('[data-view]').forEach(x => {
+          x.classList.toggle('btn-primary', x === b);
+          x.classList.toggle('btn-outline-secondary', x !== b);
+          x.setAttribute('aria-pressed', x === b);
+        });
         renderResults();
       })
     );
@@ -211,7 +201,8 @@
       const chip = e.target.closest('[data-clear]');
       if (chip) {
         const k = chip.dataset.clear;
-        if (k === 'price') { state.minPrice = 0; state.maxPrice = 25000;
+        if (k === 'price') {
+          state.minPrice = 0; state.maxPrice = 25000;
           document.getElementById('tt-min-price').value = 0;
           document.getElementById('tt-max-price').value = 25000;
         }
@@ -223,8 +214,7 @@
         state.page = 1; renderChips(); renderResults();
       }
       if (e.target.id === 'tt-clear-all') {
-        state.q = ''; state.category = 'all'; state.brand = 'all'; state.motorPower = 'all'; state.batteryType = 'all';
-        state.minPrice = 0; state.maxPrice = 25000; state.page = 1;
+        Object.assign(state, { q: '', category: 'all', brand: 'all', motorPower: 'all', batteryType: 'all', minPrice: 0, maxPrice: 25000, page: 1 });
         document.getElementById('tt-brand-filter').value = 'all';
         document.getElementById('tt-motor-filter').value = 'all';
         document.getElementById('tt-battery-filter').value = 'all';
@@ -240,6 +230,12 @@
     document.getElementById('tt-grid')?.addEventListener('click', (e) => {
       if (e.target.id === 'tt-empty-clear') document.getElementById('tt-clear-all')?.click();
     });
+
+    // Re-render on language change
+    document.addEventListener('tt:lang-changed', () => {
+      setupBrandList(); setupSpecLists(); setupCategoryList(); setupSortOptions();
+      renderChips(); renderResults();
+    });
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -248,6 +244,7 @@
     setupBrandList();
     setupSpecLists();
     setupCategoryList();
+    setupSortOptions();
     bind();
     renderChips();
     renderResults();

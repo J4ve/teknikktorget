@@ -11,10 +11,14 @@
     cart:     'tt_cart',
     welcome:  'tt_welcome_dismissed',
     a11y:     'tt_a11y',
-    mode:     'tt_mode'
+    mode:     'tt_mode',
+    lang:     'tt_lang'
   };
 
-  TT.formatPrice = (n) => 'kr ' + Number(n).toLocaleString('nb-NO');
+  TT.formatPrice = (n) => {
+    const locale = TT.lang === 'no' ? 'nb-NO' : 'en-US';
+    return 'kr ' + Number(n).toLocaleString(locale);
+  };
   TT.priceOf = (p) => p.salePrice ? p.salePrice : p.price;
 
   TT.getCart = () => {
@@ -40,8 +44,9 @@
     if (existing) existing.qty += qty;
     else cart.push({ id, qty });
     TT.saveCart(cart);
-    TT.toast(`Added “${product.name}” to cart`, 'success');
-    TT.announce(`${product.name} added to cart. Cart total ${TT.cartCount()} items.`);
+    const p = TT.localizedProduct ? TT.localizedProduct(product) : product;
+    TT.toast(TT.t ? TT.t('toast.added', { name: p.name }) : `Added “${p.name}”`, 'success');
+    TT.announce(`${p.name} added. Cart total ${TT.cartCount()} items.`);
   };
   TT.updateCartItem = (id, qty) => {
     let cart = TT.getCart();
@@ -52,7 +57,7 @@
   TT.removeFromCart = (id) => {
     const cart = TT.getCart().filter(i => i.id !== id);
     TT.saveCart(cart);
-    TT.announce('Item removed from cart');
+    TT.announce(TT.t ? TT.t('toast.removed') : 'Item removed from cart');
   };
 
   TT.updateCartBadge = () => {
@@ -95,32 +100,35 @@
 
     function render() {
       if (!matches.length) {
-        dropdown.innerHTML = '<div class="p-3 text-muted small">No products match.</div>';
+        dropdown.innerHTML = `<div class="p-3 text-muted small">${TT.t('search.noResults')}</div>`;
         return;
       }
-      dropdown.innerHTML = matches.map((p, i) => `
-        <a class="item ${i === activeIdx ? 'is-active' : ''}" href="catalog.html?q=${encodeURIComponent(input.value)}&open=${p.id}" role="option">
+      dropdown.innerHTML = matches.map((rawP, i) => {
+        const p = TT.localizedProduct ? TT.localizedProduct(rawP) : rawP;
+        return `
+        <a class="item ${i === activeIdx ? 'is-active' : ''}" href="product.html?id=${p.id}" role="option">
           <div class="thumb">
-            ${p.img ? `<img src="${p.img}" alt="">` : `<span class="material-symbols-outlined" aria-hidden="true">${p.icon || 'box'}</span>`}
+            ${p.img ? `<img src="${p.img}" alt="" onerror="${TT.imgFallback}">` : `<span class="material-symbols-outlined" aria-hidden="true">${p.icon || 'box'}</span>`}
           </div>
           <div class="flex-grow-1 small">
             <div class="fw-semibold text-truncate">${highlight(p.name, input.value)}</div>
-            <div class="text-muted" style="font-size:.75rem">${p.category}</div>
+            <div class="text-muted" style="font-size:.75rem">${TT.localizedCategory ? TT.localizedCategory(TT_CATEGORIES.find(c=>c.id===rawP.category) || {label:rawP.category}) : rawP.category}</div>
           </div>
           <div class="fw-bold small">${TT.formatPrice(TT.priceOf(p))}</div>
-        </a>
-      `).join('');
+        </a>`;
+      }).join('');
     }
 
     function runQuery() {
       const q = input.value.trim().toLowerCase();
       if (!q) { dropdown.style.display = 'none'; return; }
-      matches = TT_PRODUCTS.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.desc.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q)
-      ).slice(0, 5);
+      matches = TT_PRODUCTS.filter(p => {
+        const np = TT.localizedProduct ? TT.localizedProduct(p) : p;
+        return np.name.toLowerCase().includes(q) ||
+               np.desc.toLowerCase().includes(q) ||
+               p.category.toLowerCase().includes(q) ||
+               p.brand.toLowerCase().includes(q);
+      }).slice(0, 5);
       activeIdx = -1;
       dropdown.style.display = 'block';
       input.setAttribute('aria-expanded', 'true');
@@ -136,7 +144,7 @@
       if (!matches.length) return;
       if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = (activeIdx + 1) % matches.length; render(); }
       if (e.key === 'ArrowUp')   { e.preventDefault(); activeIdx = (activeIdx - 1 + matches.length) % matches.length; render(); }
-      if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); window.location.href = `catalog.html?q=${encodeURIComponent(input.value)}&open=${matches[activeIdx].id}`; }
+      if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); window.location.href = `product.html?id=${matches[activeIdx].id}`; }
       if (e.key === 'Escape') { dropdown.style.display = 'none'; input.setAttribute('aria-expanded','false'); }
     });
     document.addEventListener('click', (e) => {
@@ -145,6 +153,9 @@
         input.setAttribute('aria-expanded','false');
       }
     });
+
+    // Re-run query on lang change (if user has typed)
+    document.addEventListener('tt:lang-changed', () => { if (input.value) runQuery(); });
   }
 
   // ---------- Mini-cart drawer -------------------------------------------
@@ -170,25 +181,26 @@
     if (!cart.length) {
       body.innerHTML = `<div class="text-center text-muted py-5">
         <span class="material-symbols-outlined" style="font-size:3rem;opacity:.4">shopping_cart</span>
-        <p class="mb-0 mt-2 fw-semibold">Cart is empty</p>
-        <small>Browse the catalog to find your next build.</small>
+        <p class="mb-0 mt-2 fw-semibold">${TT.t('minicart.empty.title')}</p>
+        <small>${TT.t('minicart.empty.body')}</small>
       </div>`;
       sub.textContent = TT.formatPrice(0);
       return;
     }
     body.innerHTML = cart.map(it => {
-      const p = TT_PRODUCTS.find(pr => pr.id === it.id);
-      if (!p) return '';
+      const raw = TT_PRODUCTS.find(pr => pr.id === it.id);
+      if (!raw) return '';
+      const p = TT.localizedProduct ? TT.localizedProduct(raw) : raw;
       return `<div class="item">
         <div class="thumb">
-          ${p.img ? `<img src="${p.img}" alt="">` : `<span class="material-symbols-outlined">${p.icon||'box'}</span>`}
+          ${p.img ? `<img src="${p.img}" alt="" onerror="${TT.imgFallback}">` : `<span class="material-symbols-outlined">${p.icon||'box'}</span>`}
         </div>
-        <div class="flex-grow-1">
+        <div class="flex-grow-1 min-w-0">
           <div class="fw-semibold small text-truncate">${p.name}</div>
-          <div class="text-muted small">Qty ${it.qty} × ${TT.formatPrice(TT.priceOf(p))}</div>
+          <div class="text-muted small">${TT.t('product.qty')} ${it.qty} × ${TT.formatPrice(TT.priceOf(p))}</div>
           <div class="fw-bold small">${TT.formatPrice(TT.priceOf(p)*it.qty)}</div>
         </div>
-        <button type="button" class="btn btn-sm btn-link text-danger p-1" onclick="TT.removeFromCart(${p.id})" aria-label="Remove ${p.name}">
+        <button type="button" class="btn btn-sm btn-link text-danger p-1" onclick="TT.removeFromCart(${p.id})" aria-label="${TT.t('card.remove')} ${p.name}">
           <span class="material-symbols-outlined" style="font-size:18px">delete</span>
         </button>
       </div>`;
@@ -198,6 +210,10 @@
   document.addEventListener('tt:cart-changed', () => {
     if (document.querySelector('.tt-minicart.is-open')) renderMiniCart();
   });
+  document.addEventListener('tt:lang-changed', () => {
+    if (document.querySelector('.tt-minicart.is-open')) renderMiniCart();
+    TT.updateCartBadge();
+  });
 
   // ---------- Welcome guide ----------------------------------------------
   function setupWelcome() {
@@ -205,38 +221,37 @@
     if (!overlay) return;
     if (localStorage.getItem(LS_KEYS.welcome) === '1') return;
     let step = 0;
-    const steps = [
-      { title: 'Welcome to TeknikkTorget', body: 'Curated electronics, robotics and tools for serious enthusiasts. Search by spec, not by guess.', icon: 'storefront' },
-      { title: 'Find what you need', body: 'Use the search bar (Ctrl + K) for direct lookup, or browse categories with sidebar filters.', icon: 'search' },
-      { title: 'Pay with confidence', body: 'Free shipping over kr 1.000. Secure SSL checkout, 30-day returns, expert support.', icon: 'verified_user' }
+    const stepKeys = [
+      { titleK: 'welcome.s1.title', bodyK: 'welcome.s1.body', icon: 'storefront' },
+      { titleK: 'welcome.s2.title', bodyK: 'welcome.s2.body', icon: 'search' },
+      { titleK: 'welcome.s3.title', bodyK: 'welcome.s3.body', icon: 'verified_user' }
     ];
     function render() {
-      const s = steps[step];
+      const s = stepKeys[step];
       overlay.querySelector('.tt-welcome').innerHTML = `
         <div class="text-center mb-3">
           <span class="material-symbols-outlined step-illu" aria-hidden="true">${s.icon}</span>
         </div>
-        <h2 class="h5 fw-bold text-center">${s.title}</h2>
-        <p class="text-muted text-center small">${s.body}</p>
+        <h2 class="h5 fw-bold text-center">${TT.t(s.titleK)}</h2>
+        <p class="text-muted text-center small">${TT.t(s.bodyK)}</p>
         <div class="d-flex align-items-center justify-content-between mt-4">
           <div class="step-dots" aria-hidden="true">
-            ${steps.map((_, i) => `<span class="d ${i === step ? 'is-active' : ''}"></span>`).join('')}
+            ${stepKeys.map((_, i) => `<span class="d ${i === step ? 'is-active' : ''}"></span>`).join('')}
           </div>
           <div class="d-flex gap-2">
-            <button type="button" class="btn btn-link text-muted btn-sm" data-tt-welcome-skip>Skip</button>
-            <button type="button" class="btn btn-primary btn-sm" data-tt-welcome-next>${step === steps.length - 1 ? 'Start shopping' : 'Next'}</button>
+            <button type="button" class="btn btn-link text-muted btn-sm" data-tt-welcome-skip>${TT.t('welcome.skip')}</button>
+            <button type="button" class="btn btn-primary btn-sm" data-tt-welcome-next>${step === stepKeys.length - 1 ? TT.t('welcome.start') : TT.t('welcome.next')}</button>
           </div>
         </div>`;
     }
     overlay.classList.add('is-open');
     overlay.setAttribute('role','dialog');
     overlay.setAttribute('aria-modal','true');
-    overlay.setAttribute('aria-labelledby','tt-welcome-title');
     render();
     overlay.addEventListener('click', (e) => {
       if (e.target.matches('[data-tt-welcome-skip]')) close();
       if (e.target.matches('[data-tt-welcome-next]')) {
-        if (step === steps.length - 1) close();
+        if (step === stepKeys.length - 1) close();
         else { step++; render(); }
       }
     });
@@ -249,7 +264,6 @@
 
   // ---------- Keyboard shortcuts -----------------------------------------
   document.addEventListener('keydown', (e) => {
-    // Ctrl/Cmd + K → focus search
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       document.getElementById('tt-search-input')?.focus();

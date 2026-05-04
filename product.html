@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!--
-  TeknikkTorget — Cart page
-  Blueprint §5.4: free-shipping bar, zip estimator, promo, summary, secure CTA.
+  TeknikkTorget — Product detail page
+  Reads ?id=<n>, renders gallery + specs + add-to-cart + recommendations.
 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cart — TeknikkTorget</title>
+<title>Product — TeknikkTorget</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -19,10 +19,10 @@
 </head>
 <body>
 
-<a href="#tt-main" class="tt-skip-link">Skip to main content</a>
+<a href="#tt-main" class="tt-skip-link" data-i18n="nav.menu">Skip to main content</a>
 
 <div id="tt-retro-marquee" class="tt-retro-marquee" aria-hidden="true">
-  <span>★ TEKNIKKTORGET WAREHOUSE SALE ★ FREE SHIPPING OVER kr 1.000 ★</span>
+  <span>★ TEKNIKKTORGET WAREHOUSE SALE ★ FREE SHIPPING OVER kr 1.000 ★ NEW DRONES IN STOCK ★</span>
 </div>
 
 <header class="tt-navbar">
@@ -36,18 +36,17 @@
       <div id="tt-search-dropdown" class="tt-search-dropdown" role="listbox" style="display:none"></div>
     </div>
     <nav class="ms-auto d-none d-lg-flex align-items-center gap-3" aria-label="Primary">
-      <a class="nav-link" data-tt-nav="index.html" href="index.html" data-i18n="nav.home">Home</a>
+      <a class="nav-link" data-tt-nav="index.html"   href="index.html"   data-i18n="nav.home">Home</a>
       <a class="nav-link" data-tt-nav="catalog.html" href="catalog.html" data-i18n="nav.catalog">Catalog</a>
-      <a class="nav-link active" data-tt-nav="cart.html" href="cart.html" data-i18n="nav.cart">Cart</a>
     </nav>
     <button class="tt-lang-pill ms-2" type="button" data-tt-lang-toggle aria-label="Toggle language">
       <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">translate</span>
       <span data-tt-lang-label>EN</span>
     </button>
-    <button class="tt-icon-btn" data-tt-retro-toggle aria-pressed="false" aria-label="Toggle Retro Mode">
+    <button class="tt-icon-btn" data-tt-retro-toggle aria-pressed="false" aria-label="Toggle Retro Mode" title="Retro Mode">
       <span class="material-symbols-outlined" aria-hidden="true">history</span>
     </button>
-    <button class="tt-icon-btn" data-tt-a11y-toggle aria-label="Accessibility">
+    <button class="tt-icon-btn" data-tt-a11y-toggle aria-label="Open accessibility settings">
       <span class="material-symbols-outlined" aria-hidden="true">accessibility</span>
     </button>
     <button class="tt-icon-btn" type="button" onclick="TT.openMiniCart()" data-i18n-attr="aria-label:nav.openCart">
@@ -58,22 +57,7 @@
 </header>
 
 <main id="tt-main">
-  <nav class="container-fluid tt-breadcrumb" style="max-width:1440px" aria-label="Breadcrumb">
-    <a href="index.html" data-i18n="breadcrumb.home">Home</a> <span aria-hidden="true">›</span>
-    <a href="catalog.html" data-i18n="breadcrumb.catalog">Catalog</a> <span aria-hidden="true">›</span>
-    <span aria-current="page" data-i18n="breadcrumb.cart">Cart</span>
-  </nav>
-
-  <div class="container-fluid pb-5" style="max-width:1440px">
-    <h1 class="h3 fw-bold mb-3" data-i18n="cart.title">Your cart</h1>
-    <div class="row g-4">
-      <section class="col-lg-8" aria-labelledby="tt-cart-rows-title">
-        <h2 id="tt-cart-rows-title" class="visually-hidden">Cart items</h2>
-        <div id="tt-cart-rows" class="rounded p-3" style="border:1px solid var(--tt-border-subtle);background:var(--tt-surface-card)"></div>
-      </section>
-      <aside class="col-lg-4" id="tt-cart-summary" aria-label="Order summary"></aside>
-    </div>
-  </div>
+  <div class="container-fluid pb-5" style="max-width:1440px" id="tt-pd-root"></div>
 </main>
 
 <footer class="tt-footer">
@@ -87,7 +71,7 @@
 </button>
 <div class="modal fade" id="tt-help-modal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
   <div class="modal-header"><h2 class="modal-title h5" data-i18n="help.title">Need help?</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-  <div class="modal-body small">Try <strong>TT10</strong> for 10% off.</div>
+  <div class="modal-body small">Stuck on shipping or promo codes? Try <strong>TT10</strong> for 10% off.</div>
 </div></div></div>
 
 <div class="tt-minicart-backdrop" onclick="TT.closeMiniCart()"></div>
@@ -100,6 +84,7 @@
   <div id="tt-minicart-body" class="body"></div>
   <div class="foot">
     <div class="d-flex justify-content-between mb-2"><span data-i18n="cart.summary.subtotal">Subtotal</span><strong id="tt-minicart-subtotal">kr 0</strong></div>
+    <small class="text-muted d-block mb-3" data-i18n="minicart.shipTax">Shipping & tax calculated at checkout</small>
     <a href="cart.html" class="btn btn-primary w-100 mb-2" data-i18n="minicart.viewCart">View cart &amp; checkout</a>
     <button type="button" class="btn btn-link w-100" onclick="TT.closeMiniCart()" data-i18n="minicart.continue">Continue shopping</button>
   </div>
@@ -112,6 +97,6 @@
 <script src="js/ui-components.js" defer></script>
 <script src="js/a11y.js" defer></script>
 <script src="js/retro.js" defer></script>
-<script src="js/cart.js" defer></script>
+<script src="js/product.js" defer></script>
 </body>
 </html>
